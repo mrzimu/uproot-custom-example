@@ -1,6 +1,6 @@
 # Example of `uproot-custom` usage
 
-This project demonstrates how to use the `uproot-custom` package to customize branch data reading.
+This project demonstrates how to use the `uproot-custom` package to customize branch data reading. You can use this project as a template to create your own downstream projects that leverage `uproot-custom` for reading custom ROOT data structures.
 
 ## Introduction
 
