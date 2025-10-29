@@ -1,0 +1,47 @@
+[build-system]
+requires = [
+    "scikit-build-core>=0.11",
+
+    # `uproot-custom` requires specific version of `pybind11`,
+    # a table of compatible versions can be found at: # TODO: add link
+    "pybind11==3.0.*",
+
+    # At present, `uproot-custom` ensures C++ compatibility with
+    # same minor versions. Thus, we fix the minor version of
+    # `uproot-custom` here to avoid potential issues.
+    "uproot-custom==2.0.*",
+]
+build-backend = "scikit_build_core.build"
+
+[project]
+# Replace with your project name. It will be used as: `pip install <project-name>`
+# It can be different from the `wheel.packages` name.
+name = "my-reader"
+
+# At least Python 3.9 is required.
+requires-python = ">=3.9"
+
+# Should be same as in `build-system`.
+dependencies = ["uproot-custom==2.0.*"]
+
+# Project version.
+version = "0.1.0"
+
+[tool.scikit-build]
+# Entry point to your Python package. It will be used as: `import <package-name>` in Python.
+wheel.packages = ["my_reader"]
+
+# Directory where your root `CMakeLists.txt` is located.
+cmake.source-dir = "cpp"
+
+# Directory where the build files will be placed.
+build-dir = "build/{wheel_tag}"
+
+# CMake build type.
+cmake.build-type = "Release"
+
+# Black code formatter configuration
+[tool.black]
+exclude = "/(build|dist|env|.git|.tox|.eggs|.venv)/"
+line-length = 95
+target-version = ["py39", "py310", "py311", "py312", "py313"]
