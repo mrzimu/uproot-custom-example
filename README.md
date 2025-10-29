@@ -17,7 +17,6 @@ my_project/
     │   └── Python source files...
     └── cpp/
         └── C++ source files...
-
 ```
 
 - `pyproject.toml` file is required to specify the project metadata and build system requirements.
