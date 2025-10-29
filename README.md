@@ -1,6 +1,6 @@
 # Example of `uproot-custom` usage
 
-This project demonstrates how to use the `uproot-custom` package to customize branch data reading.
+This project demonstrates how to use the `uproot-custom` package to customize branch data reading. You can use this project as a template to create your own downstream projects that leverage `uproot-custom` for reading custom ROOT data structures.
 
 ## Introduction
 
@@ -17,7 +17,6 @@ my_project/
     │   └── Python source files...
     └── cpp/
         └── C++ source files...
-
 ```
 
 - `pyproject.toml` file is required to specify the project metadata and build system requirements.
