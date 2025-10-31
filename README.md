@@ -4,7 +4,7 @@ This project demonstrates how to use the `uproot-custom` package to customize br
 
 ## Introduction
 
-It implements 2 factory-reader pairs to read [`TOverrideStreamer`](https://github.com/mrzimu/uproot-custom/blob/main/example/gen-demo-data/include/TOverrideStreamer.hh) and [`TObjWithObjArray`](https://github.com/mrzimu/uproot-custom/blob/main/example/gen-demo-data/include/TObjInObjArray.hh) objects from [demo ROOT files](https://github.com/mrzimu/uproot-custom/blob/main/tests/test-data.root). The program generating demo file is located at [`uproot-custom/example/gen-demo-data`](https://github.com/mrzimu/uproot-custom/tree/main/example/gen-demo-data).
+It implements 2 factory-reader pairs to read [`TOverrideStreamer`](https://github.com/mrzimu/uproot-custom/blob/main/example/gen-demo-data/include/TOverrideStreamer.hh) and [`TObjWithObjArray`](https://github.com/mrzimu/uproot-custom/blob/main/example/gen-demo-data/include/TObjInObjArray.hh) objects from [demo ROOT files](./tests/demo-data.root). The class definitions and the program generating demo file is located at [`./gen-demo-data`](./gen-demo-data/).
 
 ## Project structure
 
@@ -24,7 +24,7 @@ my_project/
 - `cpp` directory contains the C++ source files that implement custom data reading logic.
 
 > [!TIP]
-> The name of this project is `my-reader`, and the Python module name is `my_reader`. See [Python Packaging User Guide](https://packaging.python.org/en/latest/guides/writing-pyproject-toml/) to learn more about `pyproject.toml`.
+> The name of this example project is `my-reader`, and the Python module name is `my_reader`. See [Python Packaging User Guide](https://packaging.python.org/en/latest/guides/writing-pyproject-toml/) to learn more about `pyproject.toml`.
 
 ## Installation
 

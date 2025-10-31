@@ -4,11 +4,11 @@ import uproot
 
 import my_reader
 
-tree = uproot.open(Path(__file__).parent / "test-data.root")["my_tree"]
+tree = uproot.open(Path(__file__).parent / "demo-data.root")["my_tree"]
 
 
 def test_override_streamer():
-    tree["override_streamer"].array()
+    tree["override_streamer"].arrays()
 
 
 def test_tobjarray():
