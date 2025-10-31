@@ -6,7 +6,7 @@
 
 using namespace uproot;
 
-class OverrideStreamerReader : public IElementReader {
+class OverrideStreamerReader : public IReader {
 private:
   const std::string m_name;
   std::shared_ptr<std::vector<int>> m_data_ints;
@@ -14,7 +14,7 @@ private:
 
 public:
   OverrideStreamerReader(std::string name)
-      : IElementReader(name), m_data_ints(std::make_shared<std::vector<int>>()),
+      : IReader(name), m_data_ints(std::make_shared<std::vector<int>>()),
         m_data_doubles(std::make_shared<std::vector<double>>()) {}
 
   void read(BinaryBuffer &buffer) override {
@@ -47,14 +47,14 @@ public:
   }
 };
 
-class TObjArrayReader : public IElementReader {
+class TObjArrayReader : public IReader {
 private:
   SharedReader m_element_reader;
   std::shared_ptr<std::vector<int64_t>> m_offsets;
 
 public:
   TObjArrayReader(std::string name, SharedReader element_reader)
-      : IElementReader(name), m_element_reader(element_reader),
+      : IReader(name), m_element_reader(element_reader),
         m_offsets(std::make_shared<std::vector<int64_t>>(1, 0)) {}
 
   void read(BinaryBuffer &buffer) override {
@@ -86,7 +86,7 @@ public:
  */
 PYBIND11_MODULE(my_reader_cpp, m) {
 
-  // This macro imports `uproot::IElementReader` in runtime. It is required
+  // This macro imports `uproot::IReader` in runtime. It is required
   // for all custom readers.
   IMPORT_UPROOT_CUSTOM_CPP;
 
