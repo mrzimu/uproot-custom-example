@@ -4,7 +4,7 @@ This project demonstrates how to use the `uproot-custom` package to customize br
 
 ## Introduction
 
-It implements 2 factory-reader pairs to read [`TOverrideStreamer`](https://github.com/mrzimu/uproot-custom/blob/main/example/gen-demo-data/include/TOverrideStreamer.hh) and [`TObjWithObjArray`](https://github.com/mrzimu/uproot-custom/blob/main/example/gen-demo-data/include/TObjInObjArray.hh) objects from [demo ROOT files](./tests/demo-data.root). The class definitions and the program generating demo file is located at [`./gen-demo-data`](./gen-demo-data/).
+It implements 2 factory-reader pairs to read [`TOverrideStreamer`](./gen-demo-data/include/TOverrideStreamer.hh) and [`TObjWithObjArray`](./gen-demo-data/include/TObjInObjArray.hh) objects from [demo ROOT files](./tests/demo-data.root). The class definitions and the program generating demo file is located at [`./gen-demo-data`](./gen-demo-data/).
 
 ## Project structure
 
