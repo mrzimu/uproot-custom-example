@@ -1,0 +1,11 @@
+name: Nightly test
+
+on:
+  schedule:
+    - cron: '0 12 * * *'  # Runs every day at 20:00 Beijing time
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  nightly:
+    uses: ./.github/workflows/test-package.yml
