@@ -9,7 +9,7 @@ requires = [
     # At present, `uproot-custom` ensures C++ compatibility with
     # same minor versions. Thus, we fix the minor version of
     # `uproot-custom` here to avoid potential issues.
-    "uproot-custom==2.0.*",
+    "uproot-custom==2.1.*",
 ]
 build-backend = "scikit_build_core.build"
 
@@ -22,10 +22,10 @@ name = "my-reader"
 requires-python = ">=3.9"
 
 # Should be same as in `build-system`.
-dependencies = ["uproot-custom==2.0.*"]
+dependencies = ["uproot-custom==2.1.*"]
 
 # Project version.
-version = "0.1.0"
+version = "0.2.0"
 
 # Optional dependencies for development, can be installed with: `pip install .[dev]`
 optional-dependencies = { dev = ["pytest"] }

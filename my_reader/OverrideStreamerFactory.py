@@ -10,6 +10,7 @@ class OverrideStreamerFactory(Factory):
     """
     This factory handles the TOverrideStreamer class.
     """
+
     @classmethod
     def build_factory(
         cls,
@@ -22,10 +23,10 @@ class OverrideStreamerFactory(Factory):
         """
         Decides whether to use this factory based on the streamer info.
 
-        In this method, we check if the current streamer name is `TOverrideStreamer`.
+        In this method, we check if the current streamer name or `top_type_name` is `TOverrideStreamer`.
         """
         fName = cur_streamer_info["fName"]
-        if fName != "TOverrideStreamer":
+        if fName != "TOverrideStreamer" and top_type_name != "TOverrideStreamer":
             return None
 
         # Use `Factory`'s constructor to create an instance of this factory.
