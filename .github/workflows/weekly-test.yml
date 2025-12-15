@@ -1,11 +1,11 @@
-name: Nightly test
+name: Weekly test
 
 on:
   schedule:
-    - cron: '0 12 * * *'  # Runs every day at 20:00 Beijing time
+    - cron: '0 12 * * 5'  # Runs every Friday at 20:00 Beijing time
   workflow_dispatch:
   workflow_call:
 
 jobs:
-  nightly:
+  weekly-test:
     uses: ./.github/workflows/test-package.yml
