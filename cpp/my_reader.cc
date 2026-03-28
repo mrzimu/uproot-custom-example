@@ -27,7 +27,7 @@ public:
     // Read a customly added tag
     auto tag = buffer.read<uint32_t>();
     if (tag != 0x12345678) {
-      throw std::runtime_error("Error: Unexpected tag value: " +
+      throw std::runtime_error("Unexpected tag value: " +
                                std::to_string(tag));
     }
 
