@@ -27,7 +27,7 @@ public:
     // Read a customly added tag
     auto tag = buffer.read<uint32_t>();
     if (tag != 0x12345678) {
-      throw std::runtime_error("Error: Unexpected tag value: " +
+      throw std::runtime_error("Unexpected tag value: " +
                                std::to_string(tag));
     }
 
@@ -81,10 +81,10 @@ public:
 };
 
 /*
- * Declare your C++ module here. The name "my_reader_cpp" should match
- * the name in `CMakeLists.txt`: `pybind11_add_module(my_reader_cpp ...)`.
+ * Declare your C++ module here. The name "cpp" should match
+ * the name in `CMakeLists.txt`: `pybind11_add_module(cpp ...)`.
  */
-PYBIND11_MODULE(my_reader_cpp, m) {
+PYBIND11_MODULE(cpp, m) {
 
   // This macro imports `uproot::IReader` in runtime. It is required
   // for all custom readers.

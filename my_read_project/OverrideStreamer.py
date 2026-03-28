@@ -1,9 +1,39 @@
+import array
+
 import awkward.contents
 import awkward.forms
-
+import numpy as np
 from uproot_custom import Factory
+from uproot_custom.readers.python import IReader
 
-from .my_reader_cpp import OverrideStreamerReader
+from . import cpp
+
+
+class OverrideStreamerReader(IReader):
+    def __init__(self, name):
+        super().__init__(name)
+        self.m_ints = array.array("i")  # int32
+        self.m_doubles = array.array("d")  # float64
+
+    def read(self, buffer):
+        # Skip TObject header
+        buffer.skip_TObject()
+
+        # Read integer value
+        self.m_ints.append(buffer.read_int32())
+
+        # Read a custom added mask value
+        mask = buffer.read_uint32()
+        if mask != 0x12345678:
+            raise RuntimeError(f"Error: Unexpected mask value: {mask:#x}")
+
+        # Read double value
+        self.m_doubles.append(buffer.read_double())
+
+    def data(self):
+        int_array = np.asarray(self.m_ints)
+        double_array = np.asarray(self.m_doubles)
+        return int_array, double_array
 
 
 class OverrideStreamerFactory(Factory):
@@ -36,6 +66,12 @@ class OverrideStreamerFactory(Factory):
     def build_cpp_reader(self):
         """
         Instantiate the C++ reader with factory name.
+        """
+        return cpp.OverrideStreamerReader(self.name)
+
+    def build_python_reader(self):
+        """
+        Instantiate the Python reader with factory name.
         """
         return OverrideStreamerReader(self.name)
 
