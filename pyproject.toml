@@ -16,7 +16,7 @@ build-backend = "scikit_build_core.build"
 [project]
 # Replace with your project name. It will be used as: `pip install <project-name>`
 # It can be different from the `wheel.packages` name.
-name = "my-reader"
+name = "my-read-project"
 
 # At least Python 3.9 is required.
 requires-python = ">=3.9"
@@ -25,14 +25,14 @@ requires-python = ">=3.9"
 dependencies = ["uproot-custom==2.2.*"]
 
 # Project version.
-version = "0.2.1"
+version = "0.2.2"
 
 # Optional dependencies for development, can be installed with: `pip install .[dev]`
 optional-dependencies = { dev = ["pytest"] }
 
 [tool.scikit-build]
 # Entry point to your Python package. It will be used as: `import <package-name>` in Python.
-wheel.packages = ["my_reader"]
+wheel.packages = ["my_read_project"]
 
 # Directory where your root `CMakeLists.txt` is located.
 cmake.source-dir = "cpp"

@@ -1,7 +1,7 @@
 import uproot_custom
 
-from .OverrideStreamerFactory import OverrideStreamerFactory
-from .TObjArrayFactory import TObjArrayFactory
+from .OverrideStreamer import OverrideStreamerFactory
+from .TObjArray import TObjArrayFactory
 
 # Register the custom factories so that `uproot-custom` can find them
 uproot_custom.registered_factories.add(OverrideStreamerFactory)

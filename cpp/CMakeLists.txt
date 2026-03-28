@@ -19,16 +19,16 @@ find_package(uproot-custom REQUIRED)
 # ==============================
 #    Declare the C++ module
 # ==============================
-pybind11_add_module(my_reader_cpp
+pybind11_add_module(cpp
     my_reader.cc
 )
-target_include_directories(my_reader_cpp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_link_libraries(my_reader_cpp PRIVATE uproot-custom)
+target_include_directories(cpp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(cpp PRIVATE uproot-custom)
 
 # Install the module to the package directory
 if(DEFINED SKBUILD_PROJECT_NAME)
     install(
-        TARGETS my_reader_cpp
+        TARGETS cpp
         LIBRARY DESTINATION ${SKBUILD_PROJECT_NAME}
     )
 endif()

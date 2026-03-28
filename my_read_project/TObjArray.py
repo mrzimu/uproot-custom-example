@@ -1,14 +1,41 @@
+from array import array
+
 import awkward.contents
 import awkward.forms
 import awkward.index
-
-from uproot_custom import (
-    Factory,
-    build_factory,
-)
+import numpy as np
+from uproot_custom import Factory, build_factory
 from uproot_custom.factories import AnyClassFactory, ObjectHeaderFactory
+from uproot_custom.readers.python import IReader
 
-from .my_reader_cpp import TObjArrayReader
+from . import cpp
+
+
+class TObjArrayReader(IReader):
+    def __init__(self, name: str, element_reader: IReader):
+        super().__init__(name)
+        self.element_reader = element_reader
+        self.offsets = array("q", [0])
+
+    def read(self, buffer):
+        # Read TObjArray header
+        buffer.skip_fNBytes()
+        buffer.skip_fVersion()
+        buffer.skip_TObject()
+        buffer.read_TString()  # fName
+        fSize = buffer.read_uint32()
+        buffer.skip(4)  # fLowerBound
+
+        # Record the new offset
+        self.offsets.append(self.offsets[-1] + fSize)
+
+        # Read the elements using the element reader
+        self.element_reader.read_many(buffer, fSize)
+
+    def data(self):
+        offsets_array = np.asarray(self.offsets)
+        element_data = self.element_reader.data()
+        return offsets_array, element_data
 
 
 class TObjArrayFactory(Factory):
@@ -88,6 +115,13 @@ class TObjArrayFactory(Factory):
     def build_cpp_reader(self):
         # Build the C++ reader for the elements first.
         element_reader = self.element_factory.build_cpp_reader()
+
+        # Combine the element reader into the TObjArray reader.
+        return cpp.TObjArrayReader(self.name, element_reader)
+
+    def build_python_reader(self):
+        # Build the Python reader for the elements first.
+        element_reader = self.element_factory.build_python_reader()
 
         # Combine the element reader into the TObjArray reader.
         return TObjArrayReader(self.name, element_reader)
