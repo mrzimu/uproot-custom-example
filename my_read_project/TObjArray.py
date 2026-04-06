@@ -5,7 +5,7 @@ import awkward.forms
 import awkward.index
 import numpy as np
 from uproot_custom import Factory, build_factory
-from uproot_custom.factories import AnyClassFactory, ObjectHeaderFactory
+from uproot_custom.factories import AnyClassFactory, AnyPointerFactory
 from uproot_custom.readers.python import IReader
 
 from . import cpp
@@ -87,16 +87,16 @@ class TObjArrayFactory(Factory):
 
         # Objects stored in `TObjArray` have such a format:
         # - TObjArray header (contains size info)
-        #   * Object 1: [ObjectHeader, Member1, Member2, ...]
-        #   * Object 2: [ObjectHeader, Member1, Member2, ...]
+        #   * Pointer 1: [PointerHeader, Member1, Member2, ...]
+        #   * Pointer 2: [PointerHeader, Member1, Member2, ...]
         #   * ...
         #
         # Therefore, we first create an `AnyClassFactory` for the object's members,
-        # then wrap it with an `ObjectHeaderFactory` to include the object header.
+        # then wrap it with an `AnyPointerFactory` to include the pointer header.
         # Finally, we create the `TObjArrayFactory` to read objects in a loop.
         return cls(
             name=cur_streamer_info["fName"],
-            element_factory=ObjectHeaderFactory(
+            element_factory=AnyPointerFactory(
                 name=obj_typename,
                 element_factory=AnyClassFactory(
                     name=obj_typename,
