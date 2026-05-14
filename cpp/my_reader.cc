@@ -17,22 +17,22 @@ public:
       : IReader(name), m_data_ints(std::make_shared<std::vector<int>>()),
         m_data_doubles(std::make_shared<std::vector<double>>()) {}
 
-  void read(BinaryBuffer &buffer) override {
+  void read(BinaryStream &stream) override {
     // Skip TObject header
-    buffer.skip_TObject();
+    stream.skip_TObject();
 
     // Read integer value
-    m_data_ints->push_back(buffer.read<int>());
+    m_data_ints->push_back(stream.read<int>());
 
     // Read a customly added tag
-    auto tag = buffer.read<uint32_t>();
+    auto tag = stream.read<uint32_t>();
     if (tag != 0x12345678) {
       throw std::runtime_error("Unexpected tag value: " +
                                std::to_string(tag));
     }
 
     // Read double value
-    m_data_doubles->push_back(buffer.read<double>());
+    m_data_doubles->push_back(stream.read<double>());
   }
 
   py::object data() const override {
@@ -57,20 +57,20 @@ public:
       : IReader(name), m_element_reader(element_reader),
         m_offsets(std::make_shared<std::vector<int64_t>>(1, 0)) {}
 
-  void read(BinaryBuffer &buffer) override {
+  void read(BinaryStream &stream) override {
     // Read TObjArray header
-    buffer.skip_fNBytes();
-    buffer.skip_fVersion();
-    buffer.skip_TObject();
-    buffer.read_TString(); // fName
-    auto fSize = buffer.read<uint32_t>();
-    buffer.skip(4); // fLowerBound
+    stream.skip_fNBytes();
+    stream.skip_fVersion();
+    stream.skip_TObject();
+    stream.read_TString(); // fName
+    auto fSize = stream.read<uint32_t>();
+    stream.skip(4); // fLowerBound
 
     // Record the new offset
     m_offsets->push_back(m_offsets->back() + fSize);
 
     // Read the elements using the element reader
-    m_element_reader->read_many(buffer, fSize);
+    m_element_reader->read_many(stream, fSize);
   }
 
   py::object data() const override {
