@@ -17,20 +17,20 @@ class TObjArrayReader(IReader):
         self.element_reader = element_reader
         self.offsets = array("q", [0])
 
-    def read(self, buffer):
+    def read(self, stream):
         # Read TObjArray header
-        buffer.skip_fNBytes()
-        buffer.skip_fVersion()
-        buffer.skip_TObject()
-        buffer.read_TString()  # fName
-        fSize = buffer.read_uint32()
-        buffer.skip(4)  # fLowerBound
+        stream.skip_fNBytes()
+        stream.skip_fVersion()
+        stream.skip_TObject()
+        stream.read_TString()  # fName
+        fSize = stream.read_uint32()
+        stream.skip(4)  # fLowerBound
 
         # Record the new offset
         self.offsets.append(self.offsets[-1] + fSize)
 
         # Read the elements using the element reader
-        self.element_reader.read_many(buffer, fSize)
+        self.element_reader.read_many(stream, fSize)
 
     def data(self):
         offsets_array = np.asarray(self.offsets)

@@ -15,20 +15,20 @@ class OverrideStreamerReader(IReader):
         self.m_ints = array.array("i")  # int32
         self.m_doubles = array.array("d")  # float64
 
-    def read(self, buffer):
+    def read(self, stream):
         # Skip TObject header
-        buffer.skip_TObject()
+        stream.skip_TObject()
 
         # Read integer value
-        self.m_ints.append(buffer.read_int32())
+        self.m_ints.append(stream.read_int32())
 
         # Read a custom added mask value
-        mask = buffer.read_uint32()
+        mask = stream.read_uint32()
         if mask != 0x12345678:
             raise RuntimeError(f"Error: Unexpected mask value: {mask:#x}")
 
         # Read double value
-        self.m_doubles.append(buffer.read_double())
+        self.m_doubles.append(stream.read_double())
 
     def data(self):
         int_array = np.asarray(self.m_ints)
