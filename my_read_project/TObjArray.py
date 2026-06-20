@@ -112,9 +112,9 @@ class TObjArrayFactory(Factory):
         element_content = self.element_factory.make_awkward_content(element_raw_data)
 
         # Construct and return the ListOffsetArray.
-        # Note that `AnyPointerFactory` returns `IndexedOptionArray` to represent nullptr
-        # and duplicate objects. But we're quite sure that there will be no nullptr here
-        # and all objects are unique, so we extract the content directly here.
+        # Note: pointer factories in `uproot_custom` can return an IndexedOptionArray to
+        # represent nullptr (and potentially shared/duplicate objects). The demo data used by
+        # this project contains no nullptrs and only unique objects, so we unwrap the content.
         return awkward.contents.ListOffsetArray(
             awkward.index.Index64(offsets),
             element_content.content,
