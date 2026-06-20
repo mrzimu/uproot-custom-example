@@ -5,7 +5,6 @@ import awkward.forms
 import awkward.index
 import numpy as np
 from uproot_custom import Factory, build_factory
-from uproot_custom.factories import AnyClassFactory, AnyPointerFactory
 from uproot_custom.readers.python import IReader
 
 from . import cpp
@@ -71,39 +70,17 @@ class TObjArrayFactory(Factory):
         # Since `TObjArray` is designed to store any object, we can adjust the `item_path`
         # to point to the actual object type stored in the array.
         item_path = item_path.replace(".TObjArray*", "")
-        obj_typename = "TObjInObjArray"
-
-        # `all_streamer_info` contains the streamer info of all classes.
-        # We retrieve the members of `TObjInObjArray`, and build sub-factories for them.
-        sub_factories = []
-        for s in all_streamer_info[obj_typename]:
-            sub_factories.append(
-                build_factory(
-                    cur_streamer_info=s,
-                    all_streamer_info=all_streamer_info,
-                    item_path=f"{item_path}.{obj_typename}",  # Adjust the item path accordingly
-                )
-            )
-
-        # Objects stored in `TObjArray` have such a format:
-        # - TObjArray header (contains size info)
-        #   * Pointer 1: [PointerHeader, Member1, Member2, ...]
-        #   * Pointer 2: [PointerHeader, Member1, Member2, ...]
-        #   * ...
-        #
-        # Therefore, we first create an `AnyClassFactory` for the object's members,
-        # then wrap it with an `AnyPointerFactory` to include the pointer header.
-        # Finally, we create the `TObjArrayFactory` to read objects in a loop.
-        return cls(
-            name=cur_streamer_info["fName"],
-            element_factory=AnyPointerFactory(
-                name=obj_typename,
-                element_factory=AnyClassFactory(
-                    name=obj_typename,
-                    sub_factories=sub_factories,
-                ),
-            ),
+        obj_typename = "TObjInObjArray*"
+        element_factory = build_factory(
+            cur_streamer_info={
+                "fName": obj_typename,
+                "fTypeName": obj_typename,
+            },
+            all_streamer_info=all_streamer_info,
+            item_path=f"{item_path}.{obj_typename}",
         )
+
+        return cls(name=cur_streamer_info["fName"], element_factory=element_factory)
 
     def __init__(self, name: str, element_factory: Factory):
         super().__init__(name)
@@ -135,9 +112,12 @@ class TObjArrayFactory(Factory):
         element_content = self.element_factory.make_awkward_content(element_raw_data)
 
         # Construct and return the ListOffsetArray.
+        # Note that `AnyPointerFactory` returns `IndexedOptionArray` to represent nullptr
+        # and duplicate objects. But we're quite sure that there will be no nullptr here
+        # and all objects are unique, so we extract the content directly here.
         return awkward.contents.ListOffsetArray(
             awkward.index.Index64(offsets),
-            element_content,
+            element_content.content,
         )
 
     def make_awkward_form(self):
@@ -147,5 +127,5 @@ class TObjArrayFactory(Factory):
         # Construct and return the ListOffsetForm.
         return awkward.forms.ListOffsetForm(
             "i64",
-            element_form,
+            element_form.content,
         )
