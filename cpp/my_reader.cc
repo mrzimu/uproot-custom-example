@@ -4,7 +4,7 @@
 
 #include "uproot-custom/uproot-custom.hh"
 
-using namespace uproot;
+using namespace uproot_custom;
 
 class OverrideStreamerReader : public IReader {
 private:
