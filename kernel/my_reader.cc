@@ -81,10 +81,10 @@ public:
 };
 
 /*
- * Declare your C++ module here. The name "cpp" should match
- * the name in `CMakeLists.txt`: `pybind11_add_module(cpp ...)`.
+ * Declare your C++ module here. The name "_kernel" should match
+ * the name in `CMakeLists.txt`: `pybind11_add_module(_kernel ...)`.
  */
-PYBIND11_MODULE(cpp, m) {
+PYBIND11_MODULE(_kernel, m) {
 
   // This macro imports `uproot::IReader` in runtime. It is required
   // for all custom readers.

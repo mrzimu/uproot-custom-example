@@ -4,12 +4,38 @@ import awkward.contents
 import awkward.forms
 import numpy as np
 from uproot_custom import Factory
-from uproot_custom.readers.python import IReader
+from uproot_custom.python import IReader
+from uproot_custom import detree
 
-from . import cpp
+from . import _kernel
 
 
-class OverrideStreamerReader(IReader):
+@detree.reader
+class DtOverrideStreamerReader(detree.Reader):
+    buf_ints: detree.BufferProxy = detree.Buffer("i")
+    buf_doubles: detree.BufferProxy = detree.Buffer("d")
+
+    def read(self, stream: detree.Stream):
+        # Skip TObject header
+        stream.skip_TObject()
+
+        # Read integer value
+        stream.read_into(self.buf_ints)
+
+        # Read a custom added mask value
+        mask = stream.read_uint32()
+        assert mask == 0x12345678, "Expect mask 0x12345678"  # detree only supports `assert`
+
+        # Read double value
+        self.buf_doubles.append(stream.read_double())
+
+    def data(self):
+        int_array = np.asarray(self.buf_ints)
+        double_array = np.asarray(self.buf_doubles)
+        return int_array, double_array
+
+
+class PyOverrideStreamerReader(IReader):
     def __init__(self, name):
         super().__init__(name)
         self.m_ints = array.array("i")  # int32
@@ -63,17 +89,23 @@ class OverrideStreamerFactory(Factory):
         # The constructor requires the factory name as an argument.
         return cls(fName)
 
+    def build_detree_reader(self):
+        """
+        Instantiate the detree reader with factory name.
+        """
+        return DtOverrideStreamerReader(self.name)
+
     def build_cpp_reader(self):
         """
         Instantiate the C++ reader with factory name.
         """
-        return cpp.OverrideStreamerReader(self.name)
+        return _kernel.OverrideStreamerReader(self.name)
 
     def build_python_reader(self):
         """
         Instantiate the Python reader with factory name.
         """
-        return OverrideStreamerReader(self.name)
+        return PyOverrideStreamerReader(self.name)
 
     def make_awkward_content(self, raw_data):
         """
