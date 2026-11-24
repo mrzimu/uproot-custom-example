@@ -13,6 +13,13 @@ from . import _kernel
 
 @detree.reader
 class DtTObjArrayReader(detree.Reader):
+    """
+    Detree reader for the `TObjArray` branch.
+
+    `with stream.check_nbytes()` reads the masked `fNBytes` and checks where
+    the frame ends; the Python reader spells the same step `skip_fNBytes()`.
+    """
+
     element_reader: detree.Reader = detree.Child()
     offsets: detree.BufferProxy = detree.Buffer("q", init=(0,), kind="offsets")
 
@@ -112,7 +119,7 @@ class TObjArrayFactory(Factory):
     def __init__(self, name: str, element_factory: Factory):
         super().__init__(name)
 
-        # Store the element factory, so that we can use it to build C++ reader,
+        # Store the element factory, so that we can use it to build the element reader,
         # and create Awkward content/form for the elements.
         self.element_factory = element_factory
 
@@ -138,7 +145,7 @@ class TObjArrayFactory(Factory):
         return PyTObjArrayReader(self.name, element_reader)
 
     def make_awkward_content(self, raw_data):
-        # Receive the raw data from `TObjArrayReader`,
+        # Receive the raw data from the selected backend's reader,
         # extract offsets and element raw data.
         offsets, element_raw_data = raw_data
 

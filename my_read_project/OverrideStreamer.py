@@ -12,6 +12,13 @@ from . import _kernel
 
 @detree.reader
 class DtOverrideStreamerReader(detree.Reader):
+    """
+    Detree reader for `TOverrideStreamer`.
+
+    `read` is compiled to detree-vm bytecode, so it stays in a small Python
+    subset: check a bad record with `assert`, never `raise`.
+    """
+
     buf_ints: detree.BufferProxy = detree.Buffer("i")
     buf_doubles: detree.BufferProxy = detree.Buffer("d")
 
@@ -24,7 +31,7 @@ class DtOverrideStreamerReader(detree.Reader):
 
         # Read a custom added mask value
         mask = stream.read_uint32()
-        assert mask == 0x12345678, "Expect mask 0x12345678"  # detree only supports `assert`
+        assert mask == 0x12345678, "Expect mask 0x12345678"
 
         # Read double value
         self.buf_doubles.append(stream.read_double())
@@ -109,11 +116,11 @@ class OverrideStreamerFactory(Factory):
 
     def make_awkward_content(self, raw_data):
         """
-        Transform the raw data returned from C++ reader into an Awkward RecordArray.
+        Transform the reader's raw data into an Awkward RecordArray.
 
-        The raw data is expected to be a tuple of two arrays: an integer array and a double array.
-
-        Users can customize their C++ reader to return different data structures as needed.
+        Every backend's reader returns the same tuple of two arrays: an integer
+        array and a double array. Users can customize their reader to return
+        different data structures as needed.
         """
         int_array, double_array = raw_data
 

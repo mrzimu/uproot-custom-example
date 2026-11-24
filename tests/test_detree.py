@@ -1,3 +1,5 @@
+"""Read both demo branches with the `detree` backend."""
+
 from pathlib import Path
 
 import uproot
