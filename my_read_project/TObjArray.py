@@ -5,12 +5,46 @@ import awkward.forms
 import awkward.index
 import numpy as np
 from uproot_custom import Factory, build_factory
-from uproot_custom.readers.python import IReader
+from uproot_custom.python import IReader
+from uproot_custom import detree
 
-from . import cpp
+from . import _kernel
 
 
-class TObjArrayReader(IReader):
+@detree.reader
+class DtTObjArrayReader(detree.Reader):
+    """
+    Detree reader for the `TObjArray` branch.
+
+    `with stream.check_nbytes()` reads the masked `fNBytes` and checks where
+    the frame ends; the Python reader spells the same step `skip_fNBytes()`.
+    """
+
+    element_reader: detree.Reader = detree.Child()
+    offsets: detree.BufferProxy = detree.Buffer("q", init=(0,), kind="offsets")
+
+    def read(self, stream: detree.Stream):
+        # Read TObjArray header
+        with stream.check_nbytes():
+            stream.skip_fVersion()
+            stream.skip_TObject()
+            stream.read_TString()  # fName
+            fSize = stream.read_uint32()
+            stream.skip(4)  # fLowerBound
+
+            # Record the new offset
+            self.offsets.append(self.offsets[-1] + fSize)
+
+            # Read the elements using the element reader
+            self.element_reader.read_many(stream, fSize)
+
+    def data(self):
+        offsets_array = np.asarray(self.offsets)
+        element_data = self.element_reader.data()
+        return offsets_array, element_data
+
+
+class PyTObjArrayReader(IReader):
     def __init__(self, name: str, element_reader: IReader):
         super().__init__(name)
         self.element_reader = element_reader
@@ -85,26 +119,33 @@ class TObjArrayFactory(Factory):
     def __init__(self, name: str, element_factory: Factory):
         super().__init__(name)
 
-        # Store the element factory, so that we can use it to build C++ reader,
+        # Store the element factory, so that we can use it to build the element reader,
         # and create Awkward content/form for the elements.
         self.element_factory = element_factory
+
+    def build_detree_reader(self):
+        # Build the detree reader for the elements first.
+        element_reader = self.element_factory.build_detree_reader()
+
+        # Combine the element reader into the TObjArray reader.
+        return DtTObjArrayReader(self.name, element_reader=element_reader)
 
     def build_cpp_reader(self):
         # Build the C++ reader for the elements first.
         element_reader = self.element_factory.build_cpp_reader()
 
         # Combine the element reader into the TObjArray reader.
-        return cpp.TObjArrayReader(self.name, element_reader)
+        return _kernel.TObjArrayReader(self.name, element_reader)
 
     def build_python_reader(self):
         # Build the Python reader for the elements first.
         element_reader = self.element_factory.build_python_reader()
 
         # Combine the element reader into the TObjArray reader.
-        return TObjArrayReader(self.name, element_reader)
+        return PyTObjArrayReader(self.name, element_reader)
 
     def make_awkward_content(self, raw_data):
-        # Receive the raw data from `TObjArrayReader`,
+        # Receive the raw data from the selected backend's reader,
         # extract offsets and element raw data.
         offsets, element_raw_data = raw_data
 

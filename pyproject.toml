@@ -9,7 +9,7 @@ requires = [
     # At present, `uproot-custom` ensures C++ compatibility with
     # same minor versions. Thus, we fix the minor version of
     # `uproot-custom` here to avoid potential issues.
-    "uproot-custom==2.5.*",
+    "uproot-custom>=2.6.2, <2.7",
 ]
 build-backend = "scikit_build_core.build"
 
@@ -19,13 +19,13 @@ build-backend = "scikit_build_core.build"
 name = "my-read-project"
 
 # At least Python 3.9 is required.
-requires-python = ">=3.9"
+requires-python = ">=3.9, <3.15"
 
 # Should be same as in `build-system`.
-dependencies = ["uproot-custom==2.5.*"]
+dependencies = ["uproot-custom>=2.6.2, <2.7"]
 
 # Project version.
-version = "0.5.0"
+version = "0.6.0"
 
 # Optional dependencies for development, can be installed with: `pip install .[dev]`
 optional-dependencies = { dev = ["pytest"] }
@@ -35,7 +35,7 @@ optional-dependencies = { dev = ["pytest"] }
 wheel.packages = ["my_read_project"]
 
 # Directory where your root `CMakeLists.txt` is located.
-cmake.source-dir = "cpp"
+cmake.source-dir = "kernel"
 
 # Directory where the build files will be placed.
 build-dir = "build/{wheel_tag}"
